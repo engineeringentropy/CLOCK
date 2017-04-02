@@ -208,6 +208,14 @@ int main()
 				break;
 				
 			case STATE_CLK0:
+				// Register is read above
+				// Do the program memory thing
+				output = do_program_memory(output, data);
+				state = STATE_CLK0_DONE;
+				
+				break;
+				
+			case STATE_CLK0_DONE:
 				// This state is where we've set all the outputs we need to,
 				//  and we're waiting to see the next clock pulse
 				if (is_clk_1(data, clk_drv)) {
@@ -216,20 +224,20 @@ int main()
 					_delay_loop_2(200);
 					output &= ~SET_CLK0(1);
 					write_register(output);
-					state = STATE_CLK0_DONE;
+					state = STATE_CLK1;
 				}
 				
 				break;
 				
-			case STATE_CLK0_DONE:
+			case STATE_CLK1:
 				// Register is read above
 				// Do the program memory thing
 				output = do_program_memory(output, data);
-				state = STATE_CLK1;
+				state = STATE_CLK1_DONE;
 				
 				break;
 				
-			case STATE_CLK1:
+			case STATE_CLK1_DONE:
 				// This state is where we've set all the outputs we need to,
 				//  and we're waiting to see the next clock pulse
 				if (is_clk_2(data, clk_drv)) {
@@ -238,16 +246,8 @@ int main()
 					_delay_loop_2(200);
 					output &= ~SET_CLK1(1);
 					write_register(output);
-					state = STATE_CLK1_DONE;
+					state = STATE_DUMMY0;
 				}
-				
-				break;
-				
-			case STATE_CLK1_DONE:
-				// Register is read above
-				// Do the program memory thing
-				output = do_program_memory(output, data);
-				state = STATE_DUMMY0;
 				
 				break;
 			
